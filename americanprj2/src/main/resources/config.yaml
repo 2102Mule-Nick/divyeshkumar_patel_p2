@@ -1,0 +1,6 @@
+aws:
+  url: "database-1.ccx7qqhbsir9.us-east-2.rds.amazonaws.com"
+  port: "5432"
+  dbname: "amznpostgres"
+  user: "postgres"
+  pass: "toorpass"

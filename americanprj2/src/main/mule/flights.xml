@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="get-flights" doc:id="4371017b-4b60-48f0-9dbb-6fff2b6278bf" >
+		<db:select doc:name="Select" doc:id="3550d1ac-0787-4887-a59a-0f93852fb27d" config-ref="Database_Config">
+			<db:sql ><![CDATA[select * from american_flights]]></db:sql>
+		</db:select>
+		<ee:transform doc:name="Transform Message" doc:id="57e8603f-5cbb-44d5-805a-6eeb28213a88" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload map ( payload01 , indexOfPayload01 ) -> {
+	ID: payload01.id,
+	code: payload01.code default "",
+	price: payload01.price default 0,
+	departureDate: payload01.departuredate default "",
+	origin: payload01.origin default "",
+	destination: payload01.destination default "",
+	emptySeats: payload01.emptyseats default 0,
+	"type": payload01.planetype default "",
+	totalSeats: payload01.planetotalseats default 0
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="82b8f708-c0ba-482c-9b75-fd0d61276645" />
+	</flow>
+	<flow name="get-flights-by-id" doc:id="64c60c8e-76ef-4f9b-8cbd-9a002933be0b" >
+		<db:select doc:name="selectByID" doc:id="6888bcf5-6d1e-41ba-8ae9-366dc47d353a" config-ref="Database_Config">
+			<db:sql ><![CDATA[select * from american_flights where id = :id]]></db:sql>
+			<db:input-parameters ><![CDATA[#[output application/java
+---
+{
+	id : attributes.uriParams.ID
+}]]]></db:input-parameters>
+		</db:select>
+		<ee:transform doc:name="Transform Message" doc:id="04d07951-fa25-49ce-bf30-5d5089c300fa" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload map ( payload01 , indexOfPayload01 ) -> {
+	ID: payload01.id,
+	code: payload01.code default "",
+	price: payload01.price default 0,
+	departureDate: payload01.departuredate default "",
+	origin: payload01.origin default "",
+	destination: payload01.destination default "",
+	emptySeats: payload01.emptyseats default 0,
+	"type": payload01.planetype default "",
+	totalSeats: payload01.planetotalseats default 0
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="a826f683-1f38-4a38-a027-a4c1027982c5" />
+	</flow>
+	<flow name="create-flight" doc:id="b7519d1d-9aa7-4732-8ec9-69ae00a114e0" >
+		<ee:transform doc:name="Transform Message" doc:id="301a72f7-0c64-4a66-bb17-54beea9f02f5" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+{
+	
+ message: "flight created"	
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="532f2547-c237-4aa2-b4f0-37e25b21ce5f" />
+	</flow>
+	<flow name="delete-flight" doc:id="be749b85-ec0b-4425-b98a-7fd8475d8129" >
+		<db:delete doc:name="Delete" doc:id="673c397b-4932-429c-a294-7bbe4ee059c1" config-ref="Database_Config">
+			<db:sql ><![CDATA[delete from american_flights where id = :id]]></db:sql>
+			<db:input-parameters ><![CDATA[#[output application/java
+---
+{
+	id : attributes.uriParams.ID
+}]]]></db:input-parameters>
+		</db:delete>
+		<ee:transform doc:name="Transform Message" doc:id="81d97845-0fde-441b-bcfd-71085da9ae58" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+{
+	message: "Flight deleted"
+}
+]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="put-flight" doc:id="5bb87365-6399-430c-ba52-0fc5f35c2ac3" >
+		<db:update doc:name="Update" doc:id="6818e62c-9909-4c95-b1c3-a75bb0fb7a19" config-ref="Database_Config">
+			<db:sql ><![CDATA[update american_flights set code = :code,price= :price,departuredate = :departureDate,origin = :origin,destination =:destination,
+emptyseats =:emptySeats, planetype = :planeType, planetotalseats= :totalSeats where id =:id]]></db:sql>
+			<db:input-parameters ><![CDATA[#[output application/java
+---
+{
+	id: attributes.uriParams.ID,
+	code: payload.code,
+	price: payload.price,
+	departureDate: payload.departureDate,
+	origin: payload.origin,
+	destination: payload.destination,
+	emptySeats: payload.emptySeats,
+	planeType: payload.planeType,
+	totalSeats: payload.totalSeats
+}]]]></db:input-parameters>
+		</db:update>
+	</flow>
+</mule>
