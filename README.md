@@ -1,15 +1,15 @@
 # American Flights API
 - Implemented all CRUD functionality
-		- Get all flights
-		- Get flight by Code
-		- Create a flight
-		- Replace a flight
-		- Partial update a flight
-		- Delete a flight
-	- Connected the API  DB
-			- AWS RDS Postgres DB
-	- used Design first API approach
-		- developed a RAML spec for the API
-	- Published API on Cloudhub
-		- made API publicly available on Mule Exchange
-		- created a proxy for your API
+	- Get all flights
+	- Get flight by Code
+	- Create a flight
+	- Replace a flight
+	- Partial update a flight
+	- Delete a flight
+- Connected the API  DB
+	- AWS RDS Postgres DB
+- used Design first API approach
+	- developed a RAML spec for the API
+- Published API on Cloudhub
+	- made API publicly available on Mule Exchange
+	- created a proxy for your API
